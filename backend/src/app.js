@@ -6,5 +6,5 @@ const app = express();
 app.get('/', (_request, response) => {
   response.json({ status: 'Store Manager UP!' });
 });
-
+// iniciando o projeto
 module.exports = app;
