@@ -3,7 +3,7 @@ const chai = require('chai');
 const sinonChai = require('sinon-chai');
 const productController = require('../src/controllers/productController');
 const productService = require('../src/services/productService');
-const { products } = require('./unit/models/mocks/products.model.mock');
+const { products, createdProduct } = require('./unit/models/mocks/products.model.mock');
 
 const { expect } = chai;
 
@@ -29,7 +29,7 @@ describe('Verificando controller de produtos', function () {
       expect(res.status).to.have.been.calledOnceWith(200);
     });
 
-    it('é chamado o json com a lista de motoristas', async function () {
+    it('é chamado o json com a lista de produtos', async function () {
       const res = {};
       const req = {};
 
@@ -44,5 +44,28 @@ describe('Verificando controller de produtos', function () {
 
   afterEach(function () {
     sinon.restore();
+  });
+  describe('Cadastra uma nova pessoa motorista com carros', function () {
+    beforeEach(function () {
+      sinon
+        .stub(productService, 'createProduct')
+        .resolves({ type: null, message: createdProduct });
+    });
+
+    it('é chamado o status com o código 201', async function () {
+      const res = {};
+      const req = {
+        body: {
+          name: 'Capa de invisibilidade',
+        },
+      };
+
+      res.status = sinon.stub().returns(res);
+      res.json = sinon.stub().returns();
+
+      await productController.createProduct(req, res);
+
+      expect(res.status).to.have.been.calledOnceWith(201);
+    });
   });
 });

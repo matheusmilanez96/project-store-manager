@@ -13,6 +13,9 @@ const products = [
   },
 ];
 
+const createdProduct = { id: 4, name: 'Capa de invisibilidade' };
+
 module.exports = {
   products,
+  createdProduct,
 };
