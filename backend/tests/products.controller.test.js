@@ -67,5 +67,25 @@ describe('Verificando controller de produtos', function () {
 
       expect(res.status).to.have.been.calledOnceWith(201);
     });
+
+    it('é chamado o json com o produto cadastrado', async function () {
+      const res = {};
+      const req = {
+        body: {
+          name: 'Capa de invisibilidade',
+        },
+      };
+
+      res.status = sinon.stub().returns(res);
+      res.json = sinon.stub().returns();
+
+      await productController.createProduct(req, res);
+
+      expect(res.json).to.have.been.calledWith({ type: null, message: createdProduct });
+    });
+
+    afterEach(function () {
+    sinon.restore();
+  });
   });
 });
