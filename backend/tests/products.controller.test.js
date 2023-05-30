@@ -4,6 +4,7 @@ const sinonChai = require('sinon-chai');
 const productController = require('../src/controllers/productController');
 const productService = require('../src/services/productService');
 const { products, createdProduct } = require('./unit/models/mocks/products.model.mock');
+const validateName = require('../src/middlewares/validateName');
 
 const { expect } = chai;
 
@@ -45,11 +46,40 @@ describe('Verificando controller de produtos', function () {
   afterEach(function () {
     sinon.restore();
   });
-  describe('Cadastra uma nova pessoa motorista com carros', function () {
+
+  describe('Testando getById', function () {
+    beforeEach(function () {
+      sinon
+        .stub(productController, 'getById')
+        .resolves(products[1]);
+    });
+
+    it('encontra o produto com id 2', async function () {
+      const res = {};
+      const req = {};
+
+      req.params = { id: 2 };
+
+      res.status = sinon.stub().returns(res);
+      res.json = sinon.stub().returns();
+
+      const retorno = await productController.getById(res, req);
+
+      console.log(retorno);
+
+      expect(retorno).to.deep.equal(products[1]);
+    });
+
+    afterEach(function () {
+      sinon.restore();
+    });
+  });
+  
+  describe('Cadastra um novo produto', function () {
     beforeEach(function () {
       sinon
         .stub(productService, 'createProduct')
-        .resolves({ type: null, message: createdProduct });
+        .resolves({ message: createdProduct });
     });
 
     it('é chamado o status com o código 201', async function () {
@@ -81,11 +111,64 @@ describe('Verificando controller de produtos', function () {
 
       await productController.createProduct(req, res);
 
-      expect(res.json).to.have.been.calledWith({ type: null, message: createdProduct });
+      expect(res.json).to.have.been.calledWith({ message: createdProduct });
+    });
+
+    it('verifica se o middleware foi chamado', async function () {
+      const res = {};
+      const req = {
+        body: {
+          name: 'Capa de invisibilidade',
+        },
+      };
+
+      res.status = sinon.stub().returns(res);
+      res.json = sinon.stub().returns();
+      const next = sinon.stub().returns();
+
+      validateName(req, res, next);
+
+      expect(next).to.have.been.calledWith();
     });
 
     afterEach(function () {
     sinon.restore();
   });
+  });
+
+  describe('Produto inválido', function () {
+    it('verifica se não é chamado o next para produto sem nome', async function () {
+      const res = {};
+      const req = {
+        body: {
+          name: '',
+        },
+      };
+
+      res.status = sinon.stub().returns(res);
+      res.json = sinon.stub().returns();
+      const next = sinon.stub().returns();
+
+      validateName(req, res, next);
+
+      expect(next).not.to.have.been.calledWith();
+    });
+
+    it('verifica se não é chamado o next para produto com menos de 5 letras', async function () {
+      const res = {};
+      const req = {
+        body: {
+          name: 'Capa',
+        },
+      };
+
+      res.status = sinon.stub().returns(res);
+      res.json = sinon.stub().returns();
+      const next = sinon.stub().returns();
+
+      validateName(req, res, next);
+
+      expect(next).not.to.have.been.calledWith();
+    });
   });
 });
