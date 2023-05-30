@@ -23,7 +23,35 @@ const getById = async (id) => {
   return result;
 };
 
+const addSale = async () => {
+  const query = 'INSERT INTO sales (date) VALUES (DEFAULT)';
+  const [result] = await connection.execute(query);
+  const retorno = result.insertId;
+  console.log(retorno);
+  return retorno;
+};
+
+const addSaleProduct = async (sale) => {
+  console.log(sale);
+  const { saleId, productId, quantity } = sale;
+  const columns = 'sale_id, product_id, quantity';
+
+  const placeholders = Object.keys(sale)
+    .map((_key) => '?')
+    .join(', ');
+
+  const query = `INSERT INTO sales_products (${columns}) VALUES (${placeholders})`;
+  await connection.execute(query, [saleId, productId, quantity]);
+  const retorno = {
+    productId,
+    quantity,
+  };
+  return retorno;
+};
+
 module.exports = {
   getAll,
   getById,
+  addSale,
+  addSaleProduct,
 };
