@@ -91,6 +91,7 @@ describe('Verificando controller de vendas', function () {
         ],
       };
 
+      // teste
       res.status = sinon.stub().returns(res);
       res.json = sinon.stub().returns();
 
