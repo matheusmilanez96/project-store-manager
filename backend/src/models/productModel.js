@@ -25,8 +25,19 @@ const createProduct = async ({ name }) => {
   return retorno;
 };
 
+const getProductId = async () => {
+  const query = 'SELECT id FROM products';
+  const [result] = await connection.execute(query);
+  const array = [];
+  result.forEach((_obj, index) => {
+    array.push(Object.values(result[index])[0]);
+  });
+  return array;
+};
+
 module.exports = {
   getAll,
   getById,
   createProduct,
+  getProductId,
 };

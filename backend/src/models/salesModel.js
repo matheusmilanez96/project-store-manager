@@ -27,12 +27,10 @@ const addSale = async () => {
   const query = 'INSERT INTO sales (date) VALUES (DEFAULT)';
   const [result] = await connection.execute(query);
   const retorno = result.insertId;
-  console.log(retorno);
   return retorno;
 };
 
 const addSaleProduct = async (sale) => {
-  console.log(sale);
   const { saleId, productId, quantity } = sale;
   const columns = 'sale_id, product_id, quantity';
 

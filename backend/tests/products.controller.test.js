@@ -48,26 +48,40 @@ describe('Verificando controller de produtos', function () {
   });
 
   describe('Testando getById', function () {
-    beforeEach(function () {
-      sinon
-        .stub(productController, 'getById')
-        .resolves(products[1]);
-    });
-
     it('encontra o produto com id 2', async function () {
       const res = {};
       const req = {};
+
+      sinon
+        .stub(productService, 'getById')
+        .resolves(products[1]);
 
       req.params = { id: 2 };
 
       res.status = sinon.stub().returns(res);
       res.json = sinon.stub().returns();
 
-      const retorno = await productController.getById(res, req);
+      await productController.getById(req, res);
 
-      console.log(retorno);
+      expect(res.status).to.have.been.calledOnceWith(200);
+    });
 
-      expect(retorno).to.deep.equal(products[1]);
+    it('não encontra o produto com id 88', async function () {
+      const res = {};
+      const req = {};
+
+      sinon
+        .stub(productService, 'getById')
+        .resolves(false);
+
+      req.params = { id: 88 };
+
+      res.status = sinon.stub().returns(res);
+      res.json = sinon.stub().returns();
+
+      await productController.getById(req, res);
+
+      expect(res.status).to.be.calledWith(404);
     });
 
     afterEach(function () {
