@@ -1,15 +1,14 @@
 const productModel = require('../models/productModel');
 
 module.exports = async (req, res, next) => {
-  const data = req.body;
+  const { id } = req.params;
   const ids = await productModel.getProductId();
   let err = false;
-  data.forEach((sale) => {
-    if (ids.every((id) => id !== sale.productId)) {
-      err = true;
-    }
-  });
+  if (ids.every((productId) => productId !== Number(id))) {
+    err = true;
+  }
 
+  console.log(err);
   if (err) {
     return res.status(404).json({ message: 'Product not found' });
   }

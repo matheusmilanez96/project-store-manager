@@ -18,6 +18,7 @@ const getById = async (id) => {
 const createProduct = async ({ name }) => {
   const query = 'INSERT INTO products (name) VALUES (?)';
   const [result] = await connection.execute(query, [name]);
+  console.log(result);
   const retorno = {
     id: result.insertId,
     name,
@@ -35,9 +36,23 @@ const getProductId = async () => {
   return array;
 };
 
+const updateProduct = async (id, name) => {
+  await connection.execute(
+    'UPDATE products SET name = ? WHERE id = ?',
+    [name, id],
+  );
+  const [[product]] = await connection.execute(
+    'SELECT * FROM products WHERE id = ?',
+    [id],
+  );
+  console.log(product);
+  return product;
+};
+
 module.exports = {
   getAll,
   getById,
   createProduct,
   getProductId,
+  updateProduct,
 };

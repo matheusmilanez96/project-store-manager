@@ -32,6 +32,19 @@ describe('Verificando service de produtos', function () {
       // Assert
       expect(result).to.be.deep.equal(products[0]);
     });
+
+    it('Atualizando um produto', async function () {
+      // Arrange
+      const product = {
+        id: 1,
+        name: 'Capa de invisibilidade',
+      };
+      sinon.stub(productModel, 'updateProduct').resolves(product);
+      // Act
+      const result = await productService.updateProduct(1, 'Capa de invisibilidade');
+      // Assert
+      expect(result).to.be.deep.equal(product);
+    });
   });
 
   afterEach(function () {

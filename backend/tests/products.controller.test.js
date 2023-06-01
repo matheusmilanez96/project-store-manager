@@ -3,8 +3,10 @@ const chai = require('chai');
 const sinonChai = require('sinon-chai');
 const productController = require('../src/controllers/productController');
 const productService = require('../src/services/productService');
+const productModel = require('../src/models/productModel');
 const { products, createdProduct } = require('./unit/models/mocks/products.model.mock');
 const validateName = require('../src/middlewares/validateName');
+const validateProduct2 = require('../src/middlewares/validateProduct2');
 
 const { expect } = chai;
 
@@ -128,7 +130,7 @@ describe('Verificando controller de produtos', function () {
       expect(res.json).to.have.been.calledWith({ message: createdProduct });
     });
 
-    it('verifica se o middleware foi chamado', async function () {
+    it('verifica se o middleware validateName foi chamado', async function () {
       const res = {};
       const req = {
         body: {
@@ -141,6 +143,30 @@ describe('Verificando controller de produtos', function () {
       const next = sinon.stub().returns();
 
       validateName(req, res, next);
+
+      expect(next).to.have.been.calledWith();
+    });
+
+    it('verifica se o middleware validateProduct2 foi chamado', async function () {
+      const res = {};
+      const req = {
+        body: {
+          name: 'Capa de invisibilidade',
+        },
+        params: {
+          id: 1,
+        },
+      };
+
+      sinon
+        .stub(productModel, 'getProductId')
+        .returns([1, 2, 3]);
+
+      res.status = sinon.stub().returns(res);
+      res.json = sinon.stub().returns();
+      const next = sinon.stub().returns();
+
+      await validateProduct2(req, res, next);
 
       expect(next).to.have.been.calledWith();
     });
